@@ -20,7 +20,11 @@ int main() {
  for(size_t index=0;index<80;++index) {
   for(unsigned byte=0;byte<=255;++byte) {
    const bool hex=(byte>='0'&&byte<='9')||(byte>='a'&&byte<='f')||(byte>='A'&&byte<='F');
-   if(hex)continue;std::string text(80,'0');text[index]=char(byte);
+   if (hex) {
+    continue;
+   }
+   std::string text(80, '0');
+   text[index] = char(byte);
    assert(!decode_mask_hex(text,decoded));assert(decoded==std::vector<uint8_t>({9,8,7}));
   }
  }
