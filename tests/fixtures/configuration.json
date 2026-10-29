@@ -1,0 +1,536 @@
+{
+  "provenance": "Synthetic isolated contract-test inputs. Not captured from or sent to a device.",
+  "results": [
+    {
+      "attribute": 276,
+      "zone": 1,
+      "observation": {
+        "kind": "zone",
+        "id": 1,
+        "active_raw": 1,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "80000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 1
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 2,
+      "observation": {
+        "kind": "zone",
+        "id": 2,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 2
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 3,
+      "observation": {
+        "kind": "zone",
+        "id": 3,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 3
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 4,
+      "observation": {
+        "kind": "zone",
+        "id": 4,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 4
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 5,
+      "observation": {
+        "kind": "zone",
+        "id": 5,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 5
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 6,
+      "observation": {
+        "kind": "zone",
+        "id": 6,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 6
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 7,
+      "observation": {
+        "kind": "zone",
+        "id": 7,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 7
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 8,
+      "observation": {
+        "kind": "zone",
+        "id": 8,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 8
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 9,
+      "observation": {
+        "kind": "zone",
+        "id": 9,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 9
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 10,
+      "observation": {
+        "kind": "zone",
+        "id": 10,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 10
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 11,
+      "observation": {
+        "kind": "zone",
+        "id": 11,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 11
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 12,
+      "observation": {
+        "kind": "zone",
+        "id": 12,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 12
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 13,
+      "observation": {
+        "kind": "zone",
+        "id": 13,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 13
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 14,
+      "observation": {
+        "kind": "zone",
+        "id": 14,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 14
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 15,
+      "observation": {
+        "kind": "zone",
+        "id": 15,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 15
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 16,
+      "observation": {
+        "kind": "zone",
+        "id": 16,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 16
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 17,
+      "observation": {
+        "kind": "zone",
+        "id": 17,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 17
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 18,
+      "observation": {
+        "kind": "zone",
+        "id": 18,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 18
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 19,
+      "observation": {
+        "kind": "zone",
+        "id": 19,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 19
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 20,
+      "observation": {
+        "kind": "zone",
+        "id": 20,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 20
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 21,
+      "observation": {
+        "kind": "zone",
+        "id": 21,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 21
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 22,
+      "observation": {
+        "kind": "zone",
+        "id": 22,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 22
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 23,
+      "observation": {
+        "kind": "zone",
+        "id": 23,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 23
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 24,
+      "observation": {
+        "kind": "zone",
+        "id": 24,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 24
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 25,
+      "observation": {
+        "kind": "zone",
+        "id": 25,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 25
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 26,
+      "observation": {
+        "kind": "zone",
+        "id": 26,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 26
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 27,
+      "observation": {
+        "kind": "zone",
+        "id": 27,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 27
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 28,
+      "observation": {
+        "kind": "zone",
+        "id": 28,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 28
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 29,
+      "observation": {
+        "kind": "zone",
+        "id": 29,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 29
+      }
+    },
+    {
+      "attribute": 276,
+      "zone": 30,
+      "observation": {
+        "kind": "zone",
+        "id": 30,
+        "active_raw": 0,
+        "sensitivity": 1,
+        "type": 0,
+        "close_away_raw": 0,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 30
+      }
+    },
+    {
+      "attribute": 263,
+      "zone": 0,
+      "observation": {
+        "kind": "map",
+        "attribute": 263,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 263
+      }
+    },
+    {
+      "attribute": 265,
+      "zone": 0,
+      "observation": {
+        "kind": "map",
+        "attribute": 265,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 265
+      }
+    },
+    {
+      "attribute": 272,
+      "zone": 0,
+      "observation": {
+        "kind": "map",
+        "attribute": 272,
+        "mask": "00000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "source": "radar_ram",
+        "observed_ms": 272
+      }
+    },
+    {
+      "attribute": 262,
+      "zone": 0,
+      "observation": {
+        "kind": "scalar",
+        "attribute": 262,
+        "raw": 1,
+        "wire": 2,
+        "source": "radar_ram",
+        "observed_ms": 262
+      }
+    },
+    {
+      "attribute": 273,
+      "zone": 0,
+      "observation": {
+        "kind": "scalar",
+        "attribute": 273,
+        "raw": 1,
+        "wire": 1,
+        "source": "radar_ram",
+        "observed_ms": 273
+      }
+    },
+    {
+      "attribute": 290,
+      "zone": 0,
+      "observation": {
+        "kind": "scalar",
+        "attribute": 290,
+        "raw": 1,
+        "wire": 1,
+        "source": "radar_ram",
+        "observed_ms": 290
+      }
+    },
+    {
+      "attribute": 368,
+      "zone": 0,
+      "observation": {
+        "kind": "scalar",
+        "attribute": 368,
+        "raw": 1,
+        "wire": 1,
+        "source": "radar_ram",
+        "observed_ms": 368
+      }
+    }
+  ]
+}

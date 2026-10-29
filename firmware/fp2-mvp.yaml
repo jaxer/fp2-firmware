@@ -1,0 +1,84 @@
+esphome:
+  name: fp2
+  friendly_name: FP2
+  build_path: build/fp2-mvp
+  compile_process_limit: 4
+
+esp32:
+  board: esp32-solo1
+  flash_size: 16MB
+  partitions: stock-partitions.csv
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_FREERTOS_UNICORE: "y"
+      CONFIG_ESP_SYSTEM_SINGLE_CORE_MODE: "y"
+      CONFIG_ESP_PHY_CALIBRATION_AND_DATA_STORAGE: "n"
+    advanced:
+      ignore_efuse_mac_crc: true
+      ignore_efuse_custom_mac: true
+      disable_debug_stubs: true
+
+logger:
+  baud_rate: 0
+  level: INFO
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  reboot_timeout: 0s
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+  reboot_timeout: 0s
+
+i2c:
+  id: orientation_bus
+  sda: GPIO33
+  scl: GPIO32
+  frequency: 400kHz
+  timeout: 13ms
+  scan: false
+
+uart:
+  id: radar_rx
+  rx_pin: GPIO18
+  tx_pin: GPIO19
+  baud_rate: 921600
+  rx_buffer_size: 4096
+
+external_components:
+  - source:
+      type: local
+      path: ../components
+    components: [fp2_poc]
+
+fp2_poc:
+  id: passive_radar
+  uart_id: radar_rx
+  allow_tx: true
+  allow_configuration: true
+  light_i2c_id: orientation_bus
+  illuminance:
+    name: Research illuminance
+    internal: true
+  enable_target_reports: true
+  enable_orientation: true
+  orientation_native_i2c: true
+  orientation_i2c_id: orientation_bus
+  query_interval: 1s
+  stale_timeout: 5s
+  presence:
+    name: Room presence
+  received_valid_frames:
+    name: Valid radar frames
+  rejected_frames:
+    name: Rejected radar frames
+  bytes_received:
+    name: Radar bytes received
+  last_report:
+    name: Last radar report
+  radar_traffic:
+    name: Radar traffic

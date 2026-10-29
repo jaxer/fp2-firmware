@@ -1,0 +1,83 @@
+# Optional board package included only by the normal profile; physical acceptance pending.
+# GPIO polarity, optical colors and physical timing still require verification.
+# RGB assignments follow recovered wiring; optical verification remains open.
+# Button events preserve numeric stock vocabulary; they have no reset/erase/pairing effects.
+esphome:
+  includes:
+    - <esphome/components/fp2_poc/button_adapter.h>
+
+binary_sensor:
+  - platform: gpio
+    id: board_button_input
+    internal: true
+    pin:
+      number: GPIO36
+      inverted: true
+      mode:
+        input: true
+        pullup: false
+        pulldown: false
+
+event:
+  - platform: template
+    id: board_button_gestures
+    name: Board button gestures
+    event_types:
+      - single_click
+      - double_click
+      - triple_click
+      - five_clicks
+      - ten_clicks
+      - long_hold
+      - boot_double_click
+
+interval:
+  - interval: 10ms
+    then:
+      - lambda: |-
+          static fp2_wire::ButtonAdapter button;
+          if (!id(board_button_input).has_state()) return;
+          const uint32_t now = millis();
+          const bool pressed = id(board_button_input).state;
+          if (!button.initialized()) {
+            button.initialize(pressed, now);
+            return;
+          }
+          // Local tie rule: observed edges precede timer expiries in this poll.
+          button.level(pressed, now);
+          for (uint8_t gesture : button.poll(now)) {
+            const char *types[] = {nullptr, nullptr, "single_click", "double_click", "triple_click",
+                                   "five_clicks", "ten_clicks", "long_hold", "boot_double_click"};
+            if (gesture >= 2 && gesture <= 8) id(board_button_gestures).trigger(types[gesture]);
+          }
+
+output:
+  - platform: ledc
+    id: board_red_output
+    pin: GPIO14
+    channel: 0
+    frequency: 5000Hz
+    inverted: true
+  - platform: ledc
+    id: board_green_output
+    pin: GPIO26
+    channel: 1
+    frequency: 5000Hz
+    inverted: true
+  - platform: ledc
+    id: board_blue_output
+    pin: GPIO27
+    channel: 2
+    frequency: 5000Hz
+    inverted: true
+
+light:
+  - platform: rgb
+    id: board_rgb
+    name: Board RGB
+    red: board_red_output
+    green: board_green_output
+    blue: board_blue_output
+    gamma_correct: 1.0
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF

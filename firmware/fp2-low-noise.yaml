@@ -1,0 +1,30 @@
+# Normal-profile export policy. Fast presence/zone paths and radar UART are unchanged.
+api:
+  batch_delay: 0ms
+
+fp2_poc:
+  diagnostic_interval: 60s
+  received_valid_frames:
+    disabled_by_default: true
+    state_class: ""
+  rejected_frames:
+    disabled_by_default: true
+    state_class: ""
+  bytes_received:
+    disabled_by_default: true
+    state_class: ""
+  last_report:
+    disabled_by_default: true
+  radar_configuration:
+    disabled_by_default: true
+  configuration_status:
+    disabled_by_default: true
+  learning_status:
+    disabled_by_default: true
+  auto_edge_candidate:
+    disabled_by_default: true
+  illuminance:
+    filters:
+      - throttle: 30s
+      - round: 0
+      - delta: 1.0

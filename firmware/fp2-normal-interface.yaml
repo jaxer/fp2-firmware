@@ -1,0 +1,178 @@
+# Native zones and configuration actions. Unknown slots remain unknown.
+# ACKs do not prove applied/saved state; the caller must verify readback.
+# One queued command at a time; busy/invalid requests are not retried.
+fp2_poc:
+  id: passive_radar
+  allow_configuration: true
+  enable_target_events: true
+  # Read-only bootstrap requires this device's already-installed pinned monitor.
+  enable_native_snapshot: true
+  target_count:
+    name: Radar target count
+  measured_tilt:
+    name: Measured tilt
+  mounting_direction:
+    name: Mounting direction code
+  orientation_read_failures:
+    name: Accelerometer read failures
+  illuminance:
+    name: Research illuminance
+    internal: false
+  radar_configuration:
+    name: Radar configuration
+  learning_status:
+    name: Learning status
+  auto_edge_candidate:
+    name: Auto edge candidate
+  configuration_status:
+    name: Configuration status
+  native_zones:
+    - zone_id: 1
+      name: Native zone 1 occupancy
+    - zone_id: 2
+      name: Native zone 2 occupancy
+    - zone_id: 3
+      name: Native zone 3 occupancy
+    - zone_id: 4
+      name: Native zone 4 occupancy
+    - zone_id: 5
+      name: Native zone 5 occupancy
+    - zone_id: 6
+      name: Native zone 6 occupancy
+    - zone_id: 7
+      name: Native zone 7 occupancy
+    - zone_id: 8
+      name: Native zone 8 occupancy
+    - zone_id: 9
+      name: Native zone 9 occupancy
+    - zone_id: 10
+      name: Native zone 10 occupancy
+    - zone_id: 11
+      name: Native zone 11 occupancy
+    - zone_id: 12
+      name: Native zone 12 occupancy
+    - zone_id: 13
+      name: Native zone 13 occupancy
+    - zone_id: 14
+      name: Native zone 14 occupancy
+    - zone_id: 15
+      name: Native zone 15 occupancy
+    - zone_id: 16
+      name: Native zone 16 occupancy
+    - zone_id: 17
+      name: Native zone 17 occupancy
+    - zone_id: 18
+      name: Native zone 18 occupancy
+    - zone_id: 19
+      name: Native zone 19 occupancy
+    - zone_id: 20
+      name: Native zone 20 occupancy
+    - zone_id: 21
+      name: Native zone 21 occupancy
+    - zone_id: 22
+      name: Native zone 22 occupancy
+    - zone_id: 23
+      name: Native zone 23 occupancy
+    - zone_id: 24
+      name: Native zone 24 occupancy
+    - zone_id: 25
+      name: Native zone 25 occupancy
+    - zone_id: 26
+      name: Native zone 26 occupancy
+    - zone_id: 27
+      name: Native zone 27 occupancy
+    - zone_id: 28
+      name: Native zone 28 occupancy
+    - zone_id: 29
+      name: Native zone 29 occupancy
+    - zone_id: 30
+      name: Native zone 30 occupancy
+
+api:
+  # Required by pinned fire_homeassistant_event; FP2 emits only its fixed target
+  # telemetry event and exposes no outbound HA service action.
+  homeassistant_services: true
+  actions:
+    - action: fp2_zone_mask
+      variables:
+        zone_id: int
+        mask_hex: string
+      then:
+        - lambda: |-
+            std::vector<uint8_t> mask;
+            if (!fp2_commands::decode_mask_hex(mask_hex, mask) ||
+                !id(passive_radar).configure_native_zone(static_cast<uint32_t>(zone_id), mask))
+              ESP_LOGW("fp2_interface", "Zone mask rejected: invalid input, opted out, or busy");
+    - action: fp2_special_map
+      variables:
+        attribute_id: int
+        mask_hex: string
+      then:
+        - lambda: |-
+            std::vector<uint8_t> mask;
+            if (!fp2_commands::decode_mask_hex(mask_hex, mask) ||
+                !id(passive_radar).configure_special_map(static_cast<uint32_t>(attribute_id), mask))
+              ESP_LOGW("fp2_interface", "Special map rejected: invalid input, opted out, or busy");
+    - action: fp2_scalar
+      variables:
+        attribute_id: int
+        value: int
+      then:
+        - lambda: |-
+            if (!id(passive_radar).configure_scalar(static_cast<uint32_t>(attribute_id), static_cast<uint32_t>(value)))
+              ESP_LOGW("fp2_interface", "Scalar rejected: invalid input, opted out, or busy");
+    - action: fp2_zone_property
+      variables:
+        attribute_id: int
+        zone_id: int
+        value: int
+      then:
+        - lambda: |-
+            if (!id(passive_radar).configure_zone_property(static_cast<uint32_t>(attribute_id),
+                static_cast<uint32_t>(zone_id), static_cast<uint32_t>(value)))
+              ESP_LOGW("fp2_interface", "Zone property rejected: invalid input, opted out, or busy");
+
+    - action: fp2_start_learning
+      variables:
+        attribute_id: int
+      then:
+        - lambda: |-
+            if (!id(passive_radar).start_learning(static_cast<uint32_t>(attribute_id)))
+              ESP_LOGW("fp2_interface", "Learning start rejected: invalid input, opted out, busy, or unresolved action");
+
+    - action: fp2_read_configuration
+      supports_response: optional
+      variables:
+        attribute_id: int
+        zone_id: int
+      then:
+        - if:
+            condition:
+              lambda: 'return attribute_id == 0 && zone_id == 0;'
+            then:
+              # Local ESP status only: no radar request or persistent state change.
+              - api.respond:
+                  data: !lambda |-
+                    root["configuration_status"] = id(passive_radar).configuration_status();
+                    root["learning_status"] = id(passive_radar).learning_status();
+                    root["auto_edge_candidate"] = id(passive_radar).edge_candidate();
+            else:
+              - if:
+                  condition:
+                    lambda: |-
+                      return id(passive_radar).read_configuration(static_cast<uint32_t>(attribute_id), static_cast<uint32_t>(zone_id));
+                  then:
+                    - wait_until:
+                        condition:
+                          lambda: 'return id(passive_radar).configuration_result() != "reading";'
+                        timeout: 10s
+                    - api.respond:
+                        data: !lambda |-
+                          root["configuration"] = id(passive_radar).configuration_result();
+                          root["configuration_status"] = id(passive_radar).configuration_status();
+                          root["learning_status"] = id(passive_radar).learning_status();
+                          root["auto_edge_candidate"] = id(passive_radar).edge_candidate();
+                  else:
+                    - api.respond:
+                        success: false
+                        error_message: 'Configuration read rejected: invalid, busy or unresolved learning'

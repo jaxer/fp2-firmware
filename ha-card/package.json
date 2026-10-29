@@ -1,0 +1,18 @@
+{
+  "name": "fp2-local-ha-card",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/card.ts --bundle --format=esm --target=es2022 --outfile=dist/fp2-local-card.js",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test:ui": "node tests/ui.mjs"
+  },
+  "dependencies": {
+    "lit": "3.3.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "esbuild": "0.28.2"
+  }
+}
