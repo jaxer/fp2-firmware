@@ -4,7 +4,7 @@
 # Button events preserve numeric stock vocabulary; they have no reset/erase/pairing effects.
 esphome:
   includes:
-    - <esphome/components/fp2_poc/button_adapter.h>
+    - <esphome/components/fp2/button_adapter.h>
 
 binary_sensor:
   - platform: gpio

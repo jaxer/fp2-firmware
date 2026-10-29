@@ -102,9 +102,9 @@ def run_tests():
             "-fsanitize=address,undefined",
             "-fno-omit-frame-pointer",
             "-I",
-            str(ROOT / "components/fp2_poc"),
+            str(ROOT / "components/fp2"),
             str(source),
-            str(ROOT / "components/fp2_poc/light_filter.cpp"),
+            str(ROOT / "components/fp2/light_filter.cpp"),
             "-o",
             str(binary),
         ]

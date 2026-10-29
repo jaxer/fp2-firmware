@@ -1,8 +1,8 @@
 # Native zones and configuration actions. Unknown slots remain unknown.
 # ACKs do not prove applied/saved state; the caller must verify readback.
 # One queued command at a time; busy/invalid requests are not retried.
-fp2_poc:
-  id: passive_radar
+fp2:
+  id: radar
   allow_configuration: true
   enable_target_events: true
   # Read-only bootstrap requires this device's already-installed pinned monitor.
@@ -101,7 +101,7 @@ api:
         - lambda: |-
             std::vector<uint8_t> mask;
             if (!fp2_commands::decode_mask_hex(mask_hex, mask) ||
-                !id(passive_radar).configure_native_zone(static_cast<uint32_t>(zone_id), mask))
+                !id(radar).configure_native_zone(static_cast<uint32_t>(zone_id), mask))
               ESP_LOGW("fp2_interface", "Zone mask rejected: invalid input, opted out, or busy");
     - action: fp2_special_map
       variables:
@@ -111,7 +111,7 @@ api:
         - lambda: |-
             std::vector<uint8_t> mask;
             if (!fp2_commands::decode_mask_hex(mask_hex, mask) ||
-                !id(passive_radar).configure_special_map(static_cast<uint32_t>(attribute_id), mask))
+                !id(radar).configure_special_map(static_cast<uint32_t>(attribute_id), mask))
               ESP_LOGW("fp2_interface", "Special map rejected: invalid input, opted out, or busy");
     - action: fp2_scalar
       variables:
@@ -119,7 +119,7 @@ api:
         value: int
       then:
         - lambda: |-
-            if (!id(passive_radar).configure_scalar(static_cast<uint32_t>(attribute_id), static_cast<uint32_t>(value)))
+            if (!id(radar).configure_scalar(static_cast<uint32_t>(attribute_id), static_cast<uint32_t>(value)))
               ESP_LOGW("fp2_interface", "Scalar rejected: invalid input, opted out, or busy");
     - action: fp2_zone_property
       variables:
@@ -128,7 +128,7 @@ api:
         value: int
       then:
         - lambda: |-
-            if (!id(passive_radar).configure_zone_property(static_cast<uint32_t>(attribute_id),
+            if (!id(radar).configure_zone_property(static_cast<uint32_t>(attribute_id),
                 static_cast<uint32_t>(zone_id), static_cast<uint32_t>(value)))
               ESP_LOGW("fp2_interface", "Zone property rejected: invalid input, opted out, or busy");
 
@@ -137,7 +137,7 @@ api:
         attribute_id: int
       then:
         - lambda: |-
-            if (!id(passive_radar).start_learning(static_cast<uint32_t>(attribute_id)))
+            if (!id(radar).start_learning(static_cast<uint32_t>(attribute_id)))
               ESP_LOGW("fp2_interface", "Learning start rejected: invalid input, opted out, busy, or unresolved action");
 
     - action: fp2_read_configuration
@@ -153,25 +153,25 @@ api:
               # Local ESP status only: no radar request or persistent state change.
               - api.respond:
                   data: !lambda |-
-                    root["configuration_status"] = id(passive_radar).configuration_status();
-                    root["learning_status"] = id(passive_radar).learning_status();
-                    root["auto_edge_candidate"] = id(passive_radar).edge_candidate();
+                    root["configuration_status"] = id(radar).configuration_status();
+                    root["learning_status"] = id(radar).learning_status();
+                    root["auto_edge_candidate"] = id(radar).edge_candidate();
             else:
               - if:
                   condition:
                     lambda: |-
-                      return id(passive_radar).read_configuration(static_cast<uint32_t>(attribute_id), static_cast<uint32_t>(zone_id));
+                      return id(radar).read_configuration(static_cast<uint32_t>(attribute_id), static_cast<uint32_t>(zone_id));
                   then:
                     - wait_until:
                         condition:
-                          lambda: 'return id(passive_radar).configuration_result() != "reading";'
+                          lambda: 'return id(radar).configuration_result() != "reading";'
                         timeout: 10s
                     - api.respond:
                         data: !lambda |-
-                          root["configuration"] = id(passive_radar).configuration_result();
-                          root["configuration_status"] = id(passive_radar).configuration_status();
-                          root["learning_status"] = id(passive_radar).learning_status();
-                          root["auto_edge_candidate"] = id(passive_radar).edge_candidate();
+                          root["configuration"] = id(radar).configuration_result();
+                          root["configuration_status"] = id(radar).configuration_status();
+                          root["learning_status"] = id(radar).learning_status();
+                          root["auto_edge_candidate"] = id(radar).edge_candidate();
                   else:
                     - api.respond:
                         success: false

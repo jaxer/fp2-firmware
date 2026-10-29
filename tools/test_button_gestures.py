@@ -70,7 +70,7 @@ def run_tests():
         target = Path(temporary)
         (target / "test.cpp").write_text(HARNESS)
         binary = target / "test"
-        component = ROOT / "components/fp2_poc"
+        component = ROOT / "components/fp2"
         subprocess.run(
             [
                 "c++",

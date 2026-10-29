@@ -1,14 +1,14 @@
 # Architecture
 
 Rules are pure C++ or TypeScript. Adapters own hardware, Home Assistant and
-storage. Configuration files and views connect them. Existing ESPHome component
-ID `fp2_poc` and card names are retained for compatibility, not release status.
+storage. Configuration files and views connect them. The ESPHome component is named
+`fp2`; its adapter class is `FP2Component`.
 
 ```text
 ESP32
   ESPHome YAML                         configuration / wiring
        │
-  fp2_poc.cpp                          scheduler / API / UART adapter
+  fp2.cpp                              scheduler / API / UART adapter
        ├── protocol                     framing and scalar validation
        ├── occupancy, targets           authoritative report state
        ├── normal_commands              bounded command builders

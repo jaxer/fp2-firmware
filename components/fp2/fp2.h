@@ -20,10 +20,10 @@
 #include <array>
 #include <deque>
 
-namespace esphome::fp2_poc {
+namespace esphome::fp2 {
 
 // Protected UART inheritance exposes only parent registration, not TX helpers.
-class FP2PoC : public Component, protected uart::UARTDevice
+class FP2Component : public Component, protected uart::UARTDevice
 #ifdef USE_FP2_TARGET_EVENTS
     , protected api::CustomAPIDevice
 #endif
@@ -198,4 +198,4 @@ class FP2PoC : public Component, protected uart::UARTDevice
   char report_[96]{};
 };
 
-}  // namespace esphome::fp2_poc
+}  // namespace esphome::fp2

@@ -54,7 +54,7 @@ def run_tests():
     with tempfile.TemporaryDirectory(prefix="fp2-button-adapter-") as temporary:
         target = Path(temporary)
         (target / "test.cpp").write_text(HARNESS)
-        component = ROOT / "components/fp2_poc"
+        component = ROOT / "components/fp2"
         subprocess.run(
             [
                 "c++",

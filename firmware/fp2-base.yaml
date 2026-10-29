@@ -1,7 +1,7 @@
 esphome:
   name: fp2
   friendly_name: FP2
-  build_path: build/fp2-mvp
+  build_path: build/fp2-base
   compile_process_limit: 4
 
 esp32:
@@ -53,10 +53,10 @@ external_components:
   - source:
       type: local
       path: ../components
-    components: [fp2_poc]
+    components: [fp2]
 
-fp2_poc:
-  id: passive_radar
+fp2:
+  id: radar
   uart_id: radar_rx
   allow_tx: true
   allow_configuration: true

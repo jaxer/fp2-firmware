@@ -1,24 +1,25 @@
-#include "fp2_poc.h"
+#include "fp2.h"
 
 #include <cstdio>
 #include <cmath>
 #include <algorithm>
 #include <utility>
 #include "esphome/core/hal.h"
+#include "esphome/core/application.h"
 #include "esphome/core/log.h"
 #ifdef USE_ESP32
 #include "esp_ota_ops.h"
 #include "esp_system.h"
 #endif
 
-namespace esphome::fp2_poc {
+namespace esphome::fp2 {
 
-static const char *const TAG = "fp2_poc";
+static const char *const TAG = "fp2";
 static constexpr size_t READ_BUDGET = 512;
 static constexpr uint32_t PUBLISH_INTERVAL_MS = 1000;
 static constexpr uint32_t TRAFFIC_TIMEOUT_MS = 30000;
 
-void FP2PoC::publish_targets_(const ::fp2_wire::Frame &frame) {
+void FP2Component::publish_targets_(const ::fp2_wire::Frame &frame) {
 #ifdef USE_FP2_TARGET_EVENTS
   if (!this->enable_target_events_ || !this->enable_target_reports_) return;
   // Called only when the shared strict decoder accepted this actual0117 frame.
@@ -32,7 +33,7 @@ void FP2PoC::publish_targets_(const ::fp2_wire::Frame &frame) {
   }
   ++this->target_event_attempts_;
   this->fire_homeassistant_event("esphome.fp2_targets", {
-      {"node", "fp2-poc"}, {"source", "radar_uart"},
+      {"node", std::string(App.get_name().c_str())}, {"source", "radar_uart"},
       {"sequence", std::to_string(frame.sequence)}, {"payload_hex", encoded},
       {"count", std::to_string(this->target_zones_.latest_snapshot().targets.size())}});
 #else
@@ -40,7 +41,7 @@ void FP2PoC::publish_targets_(const ::fp2_wire::Frame &frame) {
 #endif
 }
 
-void FP2PoC::setup() {
+void FP2Component::setup() {
   this->started_at_ = millis();
   this->last_publish_at_ = this->started_at_;
   this->last_diagnostics_at_ = this->started_at_;
@@ -58,7 +59,7 @@ void FP2PoC::setup() {
   this->sync_occupancy_();
 }
 
-void FP2PoC::loop() {
+void FP2Component::loop() {
   const uint32_t sensor_now = millis();
   if (sensor_now - this->last_health_at_ >= this->stale_timeout_ms_)
     this->mark_transport_unhealthy_(sensor_now);
@@ -248,7 +249,7 @@ void FP2PoC::loop() {
   }
 }
 
-void FP2PoC::dump_config() {
+void FP2Component::dump_config() {
 #ifdef USE_ESP32
   const auto *running = esp_ota_get_running_partition();
   const auto *selected = esp_ota_get_boot_partition();
@@ -313,7 +314,7 @@ void FP2PoC::dump_config() {
   LOG_BINARY_SENSOR("  ", "Radar traffic", this->traffic_sensor_);
 }
 
-void FP2PoC::set_zone_grid(uint8_t id, const std::vector<uint8_t> &grid) {
+void FP2Component::set_zone_grid(uint8_t id, const std::vector<uint8_t> &grid) {
   if (id < 1 || id > 30 || grid.size() != 40)
     return;
   std::array<uint8_t, 40> bitmap{};
@@ -322,7 +323,7 @@ void FP2PoC::set_zone_grid(uint8_t id, const std::vector<uint8_t> &grid) {
   this->host_zone_[id - 1] = this->target_zones_.configure(id, bitmap);
 }
 
-void FP2PoC::sync_occupancy_() {
+void FP2Component::sync_occupancy_() {
   const uint32_t now = millis();
   const bool orientation_ready = !this->enable_orientation_ ||
       (this->orientation_sensor_.angle_ready(now) && this->orientation_sensor_.orientation_ready(now));
@@ -358,7 +359,7 @@ void FP2PoC::sync_occupancy_() {
   }
 }
 
-void FP2PoC::set_configuration_state_(ConfigurationState state) {
+void FP2Component::set_configuration_state_(ConfigurationState state) {
   this->configuration_state_ = state;
   if (this->configuration_status_sensor_ == nullptr) return;
   const char *label = "idle";
@@ -373,7 +374,7 @@ void FP2PoC::set_configuration_state_(ConfigurationState state) {
   this->configuration_status_sensor_->publish_state(label);
 }
 
-bool FP2PoC::queue_configuration_(::fp2_wire::Frame frame) {
+bool FP2Component::queue_configuration_(::fp2_wire::Frame frame) {
   if (!this->allow_tx_ || !this->allow_configuration_ || this->learning_busy_() || this->configuration_read_active_ ||
       this->configuration_state_ == ConfigurationState::QUEUED ||
       this->configuration_state_ == ConfigurationState::SENT) return false;
@@ -393,7 +394,7 @@ bool FP2PoC::queue_configuration_(::fp2_wire::Frame frame) {
   return true;
 }
 
-bool FP2PoC::read_configuration(uint32_t attribute, uint32_t zone) {
+bool FP2Component::read_configuration(uint32_t attribute, uint32_t zone) {
   if (!this->allow_tx_ || this->configuration_read_active_ || this->learning_busy_() ||
       this->configuration_state_ == ConfigurationState::QUEUED ||
       this->configuration_state_ == ConfigurationState::SENT) return false;
@@ -413,7 +414,7 @@ bool FP2PoC::read_configuration(uint32_t attribute, uint32_t zone) {
   return true;
 }
 
-void FP2PoC::finish_configuration_read_(bool success, uint32_t now) {
+void FP2Component::finish_configuration_read_(bool success, uint32_t now) {
   if (!success) {
     if (this->configuration_read_waiting_) return;
     const auto &failed = this->configuration_reader_.result();
@@ -466,7 +467,7 @@ void FP2PoC::finish_configuration_read_(bool success, uint32_t now) {
   this->restart_native_snapshot_(now);
 }
 
-bool FP2PoC::send_configuration_read_(uint32_t now) {
+bool FP2Component::send_configuration_read_(uint32_t now) {
   if (!this->configuration_read_active_) return false;
   if (this->configuration_read_waiting_) {
     if (int32_t(now-this->configuration_read_retry_at_) < 0) return false;
@@ -492,13 +493,13 @@ bool FP2PoC::send_configuration_read_(uint32_t now) {
   return true;
 }
 
-bool FP2PoC::learning_busy_() const {
+bool FP2Component::learning_busy_() const {
   const auto status = this->learning_.state().status;
   return status == ::fp2_wire::Learning::Status::AWAITING_COMPLETION ||
          status == ::fp2_wire::Learning::Status::OUTCOME_UNKNOWN;
 }
 
-void FP2PoC::publish_learning_() {
+void FP2Component::publish_learning_() {
   const auto &state = this->learning_.state();
   const char *status = "unknown";
   switch (state.status) {
@@ -531,7 +532,7 @@ void FP2PoC::publish_learning_() {
   }
 }
 
-bool FP2PoC::start_learning(uint32_t attribute) {
+bool FP2Component::start_learning(uint32_t attribute) {
   ::fp2_wire::Learning::Action action;
   if (attribute == 0x0113) action = ::fp2_wire::Learning::Action::BACKGROUND;
   else if (attribute == 0x0150) action = ::fp2_wire::Learning::Action::AUTO_EDGE;
@@ -548,28 +549,28 @@ bool FP2PoC::start_learning(uint32_t attribute) {
   return true;
 }
 
-bool FP2PoC::configure_native_zone(uint32_t id, const std::vector<uint8_t> &map) {
+bool FP2Component::configure_native_zone(uint32_t id, const std::vector<uint8_t> &map) {
   ::fp2_wire::Frame frame;
   return ::fp2_commands::zone_geometry(0, id, map.data(), map.size(), frame) &&
          this->queue_configuration_(std::move(frame));
 }
-bool FP2PoC::configure_special_map(uint32_t id, const std::vector<uint8_t> &map) {
+bool FP2Component::configure_special_map(uint32_t id, const std::vector<uint8_t> &map) {
   ::fp2_wire::Frame frame;
   return ::fp2_commands::special_map(0, id, map.data(), map.size(), frame) &&
          this->queue_configuration_(std::move(frame));
 }
-bool FP2PoC::configure_scalar(uint32_t id, uint32_t value) {
+bool FP2Component::configure_scalar(uint32_t id, uint32_t value) {
   ::fp2_wire::Frame frame;
   return ::fp2_commands::scalar_control(0, id, value, frame) &&
          this->queue_configuration_(std::move(frame));
 }
-bool FP2PoC::configure_zone_property(uint32_t id, uint32_t zone, uint32_t value) {
+bool FP2Component::configure_zone_property(uint32_t id, uint32_t zone, uint32_t value) {
   ::fp2_wire::Frame frame;
   return ::fp2_commands::zone_property(0, id, zone, value, frame) &&
          this->queue_configuration_(std::move(frame));
 }
 
-void FP2PoC::process_tx_(uint32_t now) {
+void FP2Component::process_tx_(uint32_t now) {
   const auto learning_before = this->learning_.state().status;
   this->learning_.expire(now);
   if (this->learning_.state().status != learning_before) this->publish_learning_();
@@ -631,7 +632,7 @@ void FP2PoC::process_tx_(uint32_t now) {
   this->last_tx_at_ = now;
 }
 
-bool FP2PoC::send_orientation_(uint8_t sequence, uint16_t attribute, uint32_t now, uint8_t operation) {
+bool FP2Component::send_orientation_(uint8_t sequence, uint16_t attribute, uint32_t now, uint8_t operation) {
   const bool angle = attribute == 0x0120;
   if (!(angle ? this->orientation_sensor_.angle_ready(now)
               : this->orientation_sensor_.orientation_ready(now)))
@@ -653,7 +654,7 @@ bool FP2PoC::send_orientation_(uint8_t sequence, uint16_t attribute, uint32_t no
   return true;
 }
 
-void FP2PoC::send_auxiliary_(uint32_t now) {
+void FP2Component::send_auxiliary_(uint32_t now) {
   if (this->enable_target_reports_ && this->seen_valid_ &&
              (!this->target_enable_sent_ || (now - this->last_target_enable_at_ >= 30000 &&
                                             now - this->last_tracking_at_ >= 10000))) {
@@ -687,7 +688,7 @@ void FP2PoC::send_auxiliary_(uint32_t now) {
   this->last_tx_at_ = now;
 }
 
-void FP2PoC::mark_transport_unhealthy_(uint32_t now) {
+void FP2Component::mark_transport_unhealthy_(uint32_t now) {
   if (this->transport_unhealthy_) return;
   if (this->configuration_read_active_) this->finish_configuration_read_(false, now);
   this->transport_unhealthy_ = true;
@@ -696,7 +697,7 @@ void FP2PoC::mark_transport_unhealthy_(uint32_t now) {
   this->last_query_at_ = now - this->query_interval_ms_;
 }
 
-void FP2PoC::log_native_snapshot_() {
+void FP2Component::log_native_snapshot_() {
   const auto &native = this->native_snapshot_reader_.snapshot();
   if (this->native_snapshot_reader_.complete()) {
     ESP_LOGI(TAG, "Native snapshot: enabled=%s complete=yes failed=no attempts=%u requests=%lu counter_delta=%llu",
@@ -710,7 +711,7 @@ void FP2PoC::log_native_snapshot_() {
   }
 }
 
-void FP2PoC::restart_native_snapshot_(uint32_t now) {
+void FP2Component::restart_native_snapshot_(uint32_t now) {
   this->native_snapshot_reader_.invalidate(now);
   this->native_snapshot_active_ = false;
   this->native_snapshot_restart_ = true;
@@ -718,7 +719,7 @@ void FP2PoC::restart_native_snapshot_(uint32_t now) {
   this->native_snapshot_retry_at_ = now;
 }
 
-bool FP2PoC::send_native_snapshot_(uint32_t now) {
+bool FP2Component::send_native_snapshot_(uint32_t now) {
   if (!this->enable_native_snapshot_ || this->transport_unhealthy_ || this->learning_busy_() || this->configuration_read_active_ ||
       this->configuration_state_ == ConfigurationState::QUEUED ||
       this->configuration_state_ == ConfigurationState::SENT ||
@@ -747,7 +748,7 @@ bool FP2PoC::send_native_snapshot_(uint32_t now) {
   return true;
 }
 
-bool FP2PoC::send_frame_(uint8_t sequence, uint8_t operation, const uint8_t *payload, size_t size) {
+bool FP2Component::send_frame_(uint8_t sequence, uint8_t operation, const uint8_t *payload, size_t size) {
   // Private encoder accepts only the exact bounded wire shapes used above.
   const bool configuration = this->allow_configuration_ &&
       this->configuration_state_ == ConfigurationState::QUEUED && operation == 2 &&
@@ -790,4 +791,4 @@ bool FP2PoC::send_frame_(uint8_t sequence, uint8_t operation, const uint8_t *pay
   return true;
 }
 
-}  // namespace esphome::fp2_poc
+}  // namespace esphome::fp2

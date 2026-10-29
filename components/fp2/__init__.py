@@ -20,8 +20,8 @@ from esphome.const import (
 DEPENDENCIES = ["uart"]
 AUTO_LOAD = ["sensor", "text_sensor", "binary_sensor"]
 
-fp2_poc_ns = cg.esphome_ns.namespace("fp2_poc")
-FP2PoC = fp2_poc_ns.class_("FP2PoC", cg.Component, uart.UARTDevice)
+fp2_ns = cg.esphome_ns.namespace("fp2")
+FP2Component = fp2_ns.class_("FP2Component", cg.Component, uart.UARTDevice)
 COUNTERS = ("received_valid_frames", "rejected_frames", "bytes_received")
 
 
@@ -31,9 +31,9 @@ def unique_zones(config):
     ids = [zone["zone_id"] for zone in config.get("zones", [])]
     native_ids = [zone["zone_id"] for zone in config.get("native_zones", [])]
     if len(native_ids) != len(set(native_ids)):
-        raise cv.Invalid("Each fp2_poc native zone_id must be unique")
+        raise cv.Invalid("Each fp2 native zone_id must be unique")
     if len(ids) != len(set(ids)):
-        raise cv.Invalid("Each fp2_poc zone_id must be unique")
+        raise cv.Invalid("Each fp2 zone_id must be unique")
     if config.get("enable_native_snapshot", False) and not config.get(
         "allow_tx", False
     ):
@@ -69,7 +69,7 @@ def grid_hex(value):
 CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
-            cv.GenerateID(): cv.declare_id(FP2PoC),
+            cv.GenerateID(): cv.declare_id(FP2Component),
             cv.Optional("allow_tx", default=False): cv.boolean,
             cv.Optional("enable_native_snapshot", default=False): cv.boolean,
             cv.Optional("allow_configuration", default=False): cv.boolean,
@@ -161,7 +161,7 @@ CONFIG_SCHEMA = cv.All(
 
 def reject_tx(hub_config):
     if CONF_TX_PIN in hub_config:
-        raise cv.Invalid("fp2_poc is RX-only: remove tx_pin from its UART bus")
+        raise cv.Invalid("fp2 is RX-only: remove tx_pin from its UART bus")
     return hub_config
 
 
@@ -188,9 +188,9 @@ def final_validate(config):
         if not config["allow_tx"]:
             reject_tx(hub_config)
         elif CONF_TX_PIN not in hub_config:
-            raise cv.Invalid("fp2_poc allow_tx requires a UART tx_pin")
+            raise cv.Invalid("fp2 allow_tx requires a UART tx_pin")
     uart.final_validate_device_schema(
-        "fp2_poc", require_rx=True, data_bits=8, parity="NONE", stop_bits=1
+        "fp2", require_rx=True, data_bits=8, parity="NONE", stop_bits=1
     )(dict(config))
     return config
 

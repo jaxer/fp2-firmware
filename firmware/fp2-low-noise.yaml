@@ -2,7 +2,7 @@
 api:
   batch_delay: 0ms
 
-fp2_poc:
+fp2:
   diagnostic_interval: 60s
   received_valid_frames:
     disabled_by_default: true

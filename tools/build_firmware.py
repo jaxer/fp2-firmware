@@ -80,17 +80,17 @@ def audit(project):
     ]:
         if option not in sdk:
             raise ValueError("Unexpected SDK configuration: " + option)
-    for source in (ROOT / "components/fp2_poc").iterdir():
+    for source in (ROOT / "components/fp2").iterdir():
         if (
             source.suffix in (".cpp", ".h")
-            and (project / "src/esphome/components/fp2_poc" / source.name).read_bytes()
+            and (project / "src/esphome/components/fp2" / source.name).read_bytes()
             != source.read_bytes()
         ):
             raise ValueError("Generated component source is stale: " + source.name)
     out = ROOT / "artifacts"
     out.mkdir(exist_ok=True)
     shutil.copyfile(app, out / "fp2-esp32.bin")
-    sources = list((ROOT / "components/fp2_poc").glob("*")) + list(
+    sources = list((ROOT / "components/fp2").glob("*")) + list(
         (ROOT / "firmware").glob("*.yaml")
     )
     sources += [
@@ -116,7 +116,7 @@ def audit(project):
 
 def guarded_compile(args, config):
     project = Path(CORE.build_path).resolve()
-    if project != ROOT / "firmware/.esphome/build/fp2-normal":
+    if project != ROOT / "firmware/.esphome/build/fp2":
         raise ValueError("Unexpected build directory")
     patch(project)
     audit_ota_main("normal", (project / "src/main.cpp").read_text())

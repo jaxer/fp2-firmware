@@ -4,7 +4,7 @@ from pathlib import Path
 import hashlib
 
 ORIGINAL_SHA256 = "c9e26028ac205ad0ea9fe62fa3d89789b6ccfc01ac098d2270fa1032c544f9b3"
-STUB = """// FP2 RX-only PoC: preferences intentionally nonpersistent.
+STUB = """// FP2 firmware: preferences intentionally nonpersistent.
 #include "esphome/core/preferences.h"
 #ifdef USE_ESP32
 namespace esphome::esp32 {
@@ -33,17 +33,17 @@ def patch(project):
         return
     if hashlib.sha256(original).hexdigest() != ORIGINAL_SHA256:
         raise RuntimeError(
-            "PoC storage guard: unexpected ESPHome preferences source; refuse build"
+            "FP2 storage guard: unexpected ESPHome preferences source; refuse build"
         )
     path.write_text(STUB)
-    print("FP2 PoC: nonpersistent preferences guard applied to generated source")
+    print("FP2: nonpersistent preferences guard applied to generated source")
     patch_hal(project)
 
 
 HAL_SHA256 = "8c466270d6a8b89cc47c671cd168e472551b48b7997440d7f41b9a7e7610fd1a"
 HAL_CALL = "  esp_ota_mark_app_valid_cancel_rollback();"
 HAL_REPLACEMENT = (
-    "  // FP2 passive PoC: preserve existing stock OTA metadata; no mark-valid write."
+    "  // FP2 firmware: preserve existing stock OTA metadata; no mark-valid write."
 )
 
 
@@ -57,7 +57,7 @@ def patch_hal(project):
         or source.count(HAL_CALL) != 1
     ):
         raise RuntimeError(
-            "PoC boot metadata guard: unexpected HAL source; refuse build"
+            "FP2 boot metadata guard: unexpected HAL source; refuse build"
         )
     path.write_text(source.replace(HAL_CALL, HAL_REPLACEMENT))
-    print("FP2 PoC: stock OTA metadata preservation guard applied")
+    print("FP2: stock OTA metadata preservation guard applied")

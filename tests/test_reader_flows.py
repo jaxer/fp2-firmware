@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENT = ROOT / "components" / "fp2_poc"
+COMPONENT = ROOT / "components" / "fp2"
 
 
 class ReaderFlowTests(unittest.TestCase):

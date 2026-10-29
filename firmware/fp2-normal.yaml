@@ -1,12 +1,12 @@
 # Normal profile: native zones, board controls and authenticated local OTA.
 packages:
-  base: !include fp2-mvp.yaml
+  base: !include fp2-base.yaml
   normal_interface: !include fp2-normal-interface.yaml
   board_controls: !include fp2-board-controls.yaml
   low_noise: !include fp2-low-noise.yaml
 
 esphome:
-  build_path: build/fp2-normal
+  build_path: build/fp2
 
 # Native LAN app updates only; stock bootloader/table and NVS guards remain.
 ota:

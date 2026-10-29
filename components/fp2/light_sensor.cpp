@@ -4,7 +4,7 @@
 #include <vector>
 #endif
 
-namespace esphome::fp2_poc {
+namespace esphome::fp2 {
 #ifdef USE_FP2_LIGHT
 bool LightSensor::load_calibration_(::fp2_wire::LightCalibration &out) {
 #ifdef USE_ESP32
@@ -87,4 +87,4 @@ uint32_t LightSensor::lux() const {
   return 0;  // Readiness remains false without the adapter.
 #endif
 }
-}  // namespace esphome::fp2_poc
+}  // namespace esphome::fp2

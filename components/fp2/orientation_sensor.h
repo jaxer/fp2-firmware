@@ -10,7 +10,7 @@
 #endif
 #endif
 
-namespace esphome::fp2_poc {
+namespace esphome::fp2 {
 class OrientationSensor
 #ifdef USE_FP2_ORIENTATION
     : protected i2c::I2CDevice
@@ -82,4 +82,4 @@ class OrientationSensor
   bool valid_{false};
 #endif
 };
-}  // namespace esphome::fp2_poc
+}  // namespace esphome::fp2

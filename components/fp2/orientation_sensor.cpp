@@ -9,7 +9,7 @@
 #endif
 #endif
 
-namespace esphome::fp2_poc {
+namespace esphome::fp2 {
 #if defined(USE_FP2_ORIENTATION) && defined(USE_ESP32)
 namespace {
 i2c::ErrorCode native_error(esp_err_t error) {
@@ -197,9 +197,9 @@ uint8_t OrientationSensor::direction() const {
   return 0;  // Unreachable on the wire: readiness is always false without the adapter.
 #endif
 }
-}  // namespace esphome::fp2_poc
+}  // namespace esphome::fp2
 
-namespace esphome::fp2_poc {
+namespace esphome::fp2 {
 void OrientationSensor::dump_config() const {
 #ifdef USE_FP2_ORIENTATION
   ESP_LOGI("fp2.orientation", "Accelerometer identity: chip_id=0x%02x transfer=%s range=0x%02x/%s mode=0x%02x/%s",
@@ -216,4 +216,4 @@ void OrientationSensor::dump_config() const {
            bulk, this->probe_burst_valid_ ? "read" : "unknown");
 #endif
 }
-}  // namespace esphome::fp2_poc
+}  // namespace esphome::fp2

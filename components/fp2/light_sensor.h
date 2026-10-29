@@ -6,7 +6,7 @@
 #include "light_filter.h"
 #endif
 
-namespace esphome::fp2_poc {
+namespace esphome::fp2 {
 class LightSensor
 #ifdef USE_FP2_LIGHT
     : protected i2c::I2CDevice
@@ -42,4 +42,4 @@ class LightSensor
   bool valid_{false};
   const char *status_{"not_initialized"};
 };
-}  // namespace esphome::fp2_poc
+}  // namespace esphome::fp2
