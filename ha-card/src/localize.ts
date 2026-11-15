@@ -185,7 +185,6 @@ export const russian = {
   "{source} · {count} cells": "{source} · {count} ячеек",
   "{value} · unknown code": "{value} · неизвестный код",
   "{value} · unknown value": "{value} · неизвестное значение",
-  "Unsupported map": "Неподдерживаемая карта",
   "Reads the map from the radar first": "Сначала прочитает карту с радара",
   Far: "Далеко",
   Medium: "Средне",

@@ -4,6 +4,17 @@ One JavaScript module provides a full editor and a compact dashboard map.
 Both use HA's authenticated ESPHome connection; no backend integration, token
 in the bundle or MQTT broker is required.
 
+## Install
+
+Recommended: install from HACS / the Marketplace. Open
+[the repository in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=jaxer&repository=fp2-firmware&category=plugin)
+(or add `jaxer/fp2-firmware` as a custom repository of type **Dashboard**) and
+download it. HACS registers the resource and offers updates for each release;
+reload the browser after updating. The loaded version is printed in the browser
+console as `FP2 local cards <version>`.
+
+Manual install from source:
+
 ```sh
 npm ci --prefix ha-card
 npm --prefix ha-card test
@@ -13,6 +24,13 @@ npm --prefix ha-card run build
 Copy `ha-card/dist/fp2-local-card.js` to
 `/config/www/fp2-firmware/fp2-local-card.js`. Add a JavaScript module resource:
 `/local/fp2-firmware/fp2-local-card.js?v=1`. Change the version query after updates.
+
+### Releasing
+
+Set `version` in `ha-card/package.json` and `ha-card/package-lock.json`, merge,
+then push a matching tag, e.g. `git tag v0.2.0 && git push origin v0.2.0`. The
+*Release cards* workflow tests, builds and publishes `fp2-local-card.js` as the
+release asset that HACS downloads.
 
 ## Shared configuration cache
 

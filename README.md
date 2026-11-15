@@ -23,6 +23,15 @@ Home Assistant ⇄ ESP32 / ESPHome ⇄ TI radar ⇄ radar flash
 
 *Interface demonstration with synthetic layout data; no household capture.*
 
+## Home Assistant cards
+
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jaxer&repository=fp2-firmware&category=plugin)
+
+The cards install as a versioned dashboard resource from each
+[GitHub release](https://github.com/jaxer/fp2-firmware/releases). Use the badge
+above, or add `jaxer/fp2-firmware` as a custom **Dashboard** repository in HACS /
+the Marketplace. See [Home Assistant cards](docs/home-assistant.md).
+
 ## Build
 
 Requires Python 3.13, a C++17 compiler, Node.js 24 and [uv](https://docs.astral.sh/uv/).

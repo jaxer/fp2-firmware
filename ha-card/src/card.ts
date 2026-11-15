@@ -892,3 +892,7 @@ registry.customCards.push({
   description: translate("Presence map, zones and FP2 radar settings"),
   preview: false,
 });
+declare const __CARD_VERSION__: string | undefined;
+console.info(
+  `FP2 local cards ${typeof __CARD_VERSION__ === "string" ? __CARD_VERSION__ : "dev"}`,
+);
