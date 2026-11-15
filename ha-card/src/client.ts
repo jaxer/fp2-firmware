@@ -169,7 +169,24 @@ export class Fp2Client {
     }
     if (!this.started) {
       this.started = true;
-      void this.loadCache();
+      void this.loadCache().then(() => this.refreshInstallationAngle());
+    }
+  }
+  // The map marker depends on 0170, so read just that setting even when the cache is stale.
+  private async refreshInstallationAngle() {
+    if (this.config.read_only || this.disposed || this.unresolvedLearning()) return;
+    if (this.entity("binary_sensor", "radar_traffic")?.state !== "on") return;
+    const notice = this.state.notice;
+    const cached = this.state.scalars[0x170]?.wire;
+    try {
+      await this.serialize(async () => {
+        await this.read(0x170, 0);
+        // Save the cache only when the radar value differs from the cached one.
+        this.configurationChanged = this.state.scalars[0x170]?.wire !== cached;
+      });
+    } catch {
+      this.state.notice = notice;
+      this.emit();
     }
   }
   private acceptReply(result: any) {
@@ -482,6 +499,11 @@ export class Fp2Client {
   readZone(id: number) {
     this.zoneId(id);
     return this.serialize(() => this.read(0x114, id));
+  }
+  readSpecialMap(attribute: number) {
+    if (!SPECIAL_MAPS.some((m) => m.attribute === attribute))
+      throw new Error(this.t("Unsupported map"));
+    return this.serialize(() => this.read(attribute, 0));
   }
   private zoneId(id: number) {
     if (!Number.isInteger(id) || id < 1 || id > 30)

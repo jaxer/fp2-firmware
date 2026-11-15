@@ -6,7 +6,7 @@ import {
 } from "./localize.ts";
 import { LitElement, html, svg, nothing, css } from "lit";
 import { Fp2Client } from "./client.ts";
-import { decodeMask, targetToGrid } from "./protocol.ts";
+import { decodeMask, sensorColumn, targetToGrid } from "./protocol.ts";
 import type { CardConfig, HomeAssistant, PanelState } from "./types.ts";
 export class Fp2GlanceCard extends LitElement {
   private t(key: string, values: MessageValues = {}) {
@@ -126,6 +126,11 @@ export class Fp2GlanceCard extends LitElement {
   getGridOptions() {
     return { columns: 12, rows: 8, min_columns: 6 };
   }
+  private configureHref() {
+    const path = this.config.configure_path;
+    // Same-origin paths only, so a card config can never inject another scheme or host.
+    return typeof path === "string" && /^\/(?!\/)[\w\-./?=&#]*$/.test(path) ? path : "/fp2-local/control";
+  }
   setConfig(config: CardConfig) {
     this.config = { ...config };
     this.client?.dispose();
@@ -182,7 +187,7 @@ export class Fp2GlanceCard extends LitElement {
     return html`<ha-card lang=${resolveLanguage(this.config, this.ha)}
       ><header>
         <h2>${this.config.title || this.t("FP2 radar")}</h2>
-        <a href="/fp2-local/control" aria-label=${this.t("Open radar settings")}
+        <a href=${this.configureHref()} aria-label=${this.t("Open radar settings")}
           >${this.t("Configure ↗")}</a
         >
       </header>
@@ -211,7 +216,7 @@ export class Fp2GlanceCard extends LitElement {
           const i = middle[Math.floor(middle.length / 2)];
           return svg`<g>${cells.map((on, i) => (on ? svg`<rect x=${(i % 16) + 0.03} y=${Math.floor(i / 16) + 0.03} width=".94" height=".94" fill=${this.color(z.id)} fill-opacity=${s.deviceFresh && s.occupancy[z.id] === "on" ? 0.65 : 0.22} stroke=${s.deviceFresh && s.occupancy[z.id] === "on" ? "var(--primary-text-color)" : "none"} stroke-width=".04"/>` : nothing))}${i !== undefined ? svg`<text x=${(i % 16) + 0.5} y=${Math.floor(i / 16) + 0.65} text-anchor="middle" font-size=".55" font-weight="700" fill="var(--primary-text-color)">${z.id}</text>` : nothing}</g>`;
         })}${Array.from({ length: 17 }, (_, i) => svg`<path d=${`M${i} 0V20`} stroke="var(--divider-color)" stroke-width=".025"/>`)}${Array.from({ length: 21 }, (_, i) => svg`<path d=${`M0 ${i}H16`} stroke="var(--divider-color)" stroke-width=".025"/>`)}
-        <path d="M7.7 -.5H8.3L8 0Z" fill="var(--primary-text-color)" />
+        <path d=${`M${sensorColumn(s.scalars[0x170]?.wire) - 0.3} -.5H${sensorColumn(s.scalars[0x170]?.wire) + 0.3}L${sensorColumn(s.scalars[0x170]?.wire)} 0Z`} fill="var(--primary-text-color)" />
         ${
           live
             ? s.targets!.items.map((t) => {

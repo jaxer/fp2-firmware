@@ -23,7 +23,7 @@ export const russian = {
   Eraser: "Ластик",
   "Radar coordinate grid · not metres": "Координатная сетка радара · не метры",
   "Radar map: 16 columns, 20 rows": "Карта радара: 16 столбцов, 20 строк",
-  "SENSOR · c8 / r0": "ДАТЧИК · c8 / r0",
+  "SENSOR · c{column} / r0": "ДАТЧИК · c{column} / r0",
   "Radar target": "Цель радара",
   "Colour — zone · outline — presence": "Цвет — область · контур — присутствие",
   "Yellow — local draft": "Жёлтый — локальный черновик",
@@ -64,8 +64,8 @@ export const russian = {
   "Create zone": "Создать область",
   "Name in Home Assistant": "Название в Home Assistant",
   "Zone settings": "Параметры области",
-  "Device codes. Physical type names are unconfirmed.":
-    "Коды устройства. Названия физических типов не подтверждены.",
+  "Device codes. Names are shown only where known from FP2 notes.":
+    "Коды устройства. Названия показаны только там, где они известны из заметок об FP2.",
   "Zone sensitivity": "Чувствительность области",
   "Tracker history window limit: 1 → 200, 2 → 400, 3 → 2000 internal cycles, not seconds. A longer window may retain older target evidence. This is part of the algorithm, not a confirmed “low → high sensitivity” scale. Global sensitivity works differently.":
     "Предел одного окна истории трекера: 1 → 200, 2 → 400, 3 → 2000 внутренних циклов, не секунд. Более длинное окно может сохранять старые подтверждения цели. Это часть алгоритма, а не доказанная шкала «низкая → высокая чувствительность». Глобальная чувствительность работает иначе.",
@@ -87,8 +87,8 @@ export const russian = {
     "Выберите карту, затем редактируйте локальный черновик. Запись только по кнопке «Применить».",
   "Discard the draft?": "Отменить черновик?",
   "Advanced radar settings": "Дополнительные параметры радара",
-  "Numeric protocol values. Changes require confirmation and read-back verification.":
-    "Числовые значения протокола. Изменение запрашивает подтверждение и проверку чтением.",
+  "Radar protocol settings. Changes require confirmation and read-back verification.":
+    "Параметры протокола радара. Изменение запрашивает подтверждение и проверку чтением.",
   "Individual target deletion · 0160: unavailable because the radar firmware may enter an infinite loop.":
     "Удаление отдельной цели · 0160: недоступно из-за потенциального зацикливания в прошивке радара.",
   "Background learning": "Обучение фона",
@@ -184,6 +184,28 @@ export const russian = {
     "{seconds} с назад · последовательность {sequence}",
   "{source} · {count} cells": "{source} · {count} ячеек",
   "{value} · unknown code": "{value} · неизвестный код",
+  "{value} · unknown value": "{value} · неизвестное значение",
+  "Unsupported map": "Неподдерживаемая карта",
+  "Reads the map from the radar first": "Сначала прочитает карту с радара",
+  Far: "Далеко",
+  Medium: "Средне",
+  Close: "Близко",
+  Low: "Низкая",
+  High: "Высокая",
+  Consistent: "Совпадает",
+  Opposite: "Противоположно",
+  Automatic: "Автоматически",
+  Wall: "Стена",
+  "Left corner": "Левый угол",
+  "Right corner": "Правый угол",
+  TV: "Телевизор",
+  "Green plant": "Комнатное растение",
+  Leisure: "Отдых",
+  Dressing: "Гардероб",
+  Closet: "Шкаф",
+  Desk: "Стол",
+  Shower: "Душ",
+  Stairs: "Лестница",
   "{value} · history up to {window} samples":
     "{value} · история до {window} отсчётов",
   "0153 · write value (RAM raw: {raw}, inversion 0↔1)":

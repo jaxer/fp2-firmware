@@ -8,6 +8,7 @@ export interface CardConfig {
   service_prefix?: string;
   node?: string;
   cache_dashboard?: string;
+  configure_path?: string;
   read_only?: boolean;
 }
 export interface HaEntity {

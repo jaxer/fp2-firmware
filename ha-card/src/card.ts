@@ -14,6 +14,8 @@ import {
   SPECIAL_MAPS,
   SCALAR_CONTROLS,
   ZONE_TYPE_CODES,
+  ZONE_TYPE_NAMES,
+  sensorColumn,
 } from "./protocol.ts";
 import type {
   CardConfig,
@@ -287,15 +289,15 @@ export class Fp2LocalCard extends LitElement {
                   : nothing,
               )
         }${Array.from({ length: 17 }, (_, i) => svg`<path d=${`M${i} 0V20`} stroke="var(--divider-color,#ccd6df)" stroke-width=".025"/>`)}${Array.from({ length: 21 }, (_, i) => svg`<path d=${`M0 ${i}H16`} stroke="var(--divider-color,#ccd6df)" stroke-width=".025"/>`)}
-        <path d="M7.7 -.4H8.3L8 0Z" fill="var(--primary-text-color)" />
+        <path d=${`M${this.sensorColumn() - 0.3} -.4H${this.sensorColumn() + 0.3}L${this.sensorColumn()} 0Z`} fill="var(--primary-text-color)" />
         <text
-          x="8"
+          x=${this.sensorColumn()}
           y="-.6"
-          text-anchor="middle"
+          text-anchor=${this.sensorColumn() === 0 ? "start" : this.sensorColumn() === 16 ? "end" : "middle"}
           font-size=".28"
           fill="var(--secondary-text-color)"
         >
-          ${this.t("SENSOR · c8 / r0")}
+          ${this.t("SENSOR · c{column} / r0", { column: this.sensorColumn() })}
         </text>
         ${[0, 4, 8, 12, 16].map((c) => svg`<text x=${c} y="20.55" text-anchor="middle" font-size=".28" fill="var(--secondary-text-color)">c${c}</text>`)}${[0, 5, 10, 15, 20].map((r) => svg`<text x="-.2" y=${r + 0.1} text-anchor="end" font-size=".28" fill="var(--secondary-text-color)">r${r}</text>`)}${
           live
@@ -454,7 +456,7 @@ export class Fp2LocalCard extends LitElement {
       <div class="zone-properties">
         <h3>${this.t("Zone settings")}</h3>
         <p class="tiny">
-          ${this.t("Device codes. Physical type names are unconfirmed.")}
+          ${this.t("Device codes. Names are shown only where known from FP2 notes.")}
         </p>
         <label class="field"
           >${this.t("Zone sensitivity")}<select
@@ -487,7 +489,7 @@ export class Fp2LocalCard extends LitElement {
             .value=${String(z?.type ?? 0)}
             @change=${(e: Event) => this.zoneProperty("type", Number((e.target as HTMLSelectElement).value))}
           >
-            ${ZONE_TYPE_CODES.map((code, i) => html`<option value=${i}>${code} · raw ${i}</option>`)}
+            ${ZONE_TYPE_CODES.map((code, i) => html`<option value=${i}>${ZONE_TYPE_NAMES[i] ? `${this.t(ZONE_TYPE_NAMES[i])} · ` : ""}${code} · raw ${i}</option>`)}
           </select></label
         >${this.zoneField(this.t("0153 · write value (RAM raw: {raw}, inversion 0↔1)", { raw: z?.close_away_raw ?? "—" }), z ? (z.close_away_raw === 0 ? 1 : 0) : undefined, "close_away_value", 0, 1)}
       </div>
@@ -608,51 +610,57 @@ export class Fp2LocalCard extends LitElement {
       <details class="section">
         <summary>${this.t("Advanced radar settings")}</summary>
         <p>
-          ${this.t("Numeric protocol values. Changes require confirmation and read-back verification.")}
+          ${this.t("Radar protocol settings. Changes require confirmation and read-back verification.")}
         </p>
         <p class="tiny">
           ${this.t("Individual target deletion · 0160: unavailable because the radar firmware may enter an infinite loop.")}
         </p>
-        ${SCALAR_CONTROLS.map(
-          (c) =>
-            html`<label class="field"
-              >${this.t(c.label)}
-              <div class="row">
-                <input
-                  type="number"
-                  min=${c.min}
-                  max=${c.max}
-                  .value=${String(this.state!.scalars[c.attribute]?.wire ?? "")}
-                  id=${`scalar-${c.attribute}`}
-                  placeholder=${this.t("Not read")}
-                /><button
-                  ?disabled=${this.state!.busy}
-                  @click=${() => {
-                    const input = this.renderRoot.querySelector(
-                      `#scalar-${c.attribute}`,
-                    ) as HTMLInputElement;
-                    const value = Number(input.value);
-                    if (
-                      input.value !== "" &&
-                      input.reportValidity() &&
-                      confirm(
-                        this.t("Write “{label}”: {value}?", {
-                          label: this.t(c.label),
-                          value: value,
-                        }),
-                      )
+        ${SCALAR_CONTROLS.map((c) => {
+          const current = this.state!.scalars[c.attribute]?.wire;
+          const known = c.options.some((o) => o.value === current);
+          return html`<label class="field"
+            >${this.t(c.label)}
+            <div class="row">
+              <select id=${`scalar-${c.attribute}`}>
+                ${current === undefined
+                  ? html`<option value="" selected disabled>${this.t("Not read")}</option>`
+                  : !known
+                    ? html`<option value=${current} selected disabled>${this.t("{value} · unknown value", { value: current })}</option>`
+                    : nothing}
+                ${c.options.map(
+                  (o) =>
+                    html`<option value=${o.value} ?selected=${o.value === current}>${this.t(o.label)} · ${o.value}</option>`,
+                )}
+              </select
+              ><button
+                ?disabled=${this.state!.busy}
+                @click=${() => {
+                  const select = this.renderRoot.querySelector(
+                    `#scalar-${c.attribute}`,
+                  ) as HTMLSelectElement;
+                  const option = c.options.find((o) => String(o.value) === select.value);
+                  if (
+                    option &&
+                    confirm(
+                      this.t("Write “{label}”: {value}?", {
+                        label: this.t(c.label),
+                        value: `${this.t(option.label)} (${option.value})`,
+                      }),
                     )
-                      this.run(() =>
-                        this.client!.saveScalar(c.attribute, value),
-                      );
-                  }}
-                >
-                  ${this.t("Apply")}
-                </button>
-              </div></label
-            >`,
-        )}
+                  )
+                    this.run(() => this.client!.saveScalar(c.attribute, option.value));
+                }}
+              >
+                ${this.t("Apply")}
+              </button>
+            </div></label
+          >`;
+        })}
       </details>`;
+  }
+  // Installation angle 0170: 1 wall (top centre), 2 left corner, 3 right corner.
+  private sensorColumn() {
+    return sensorColumn(this.state?.scalars[0x170]?.wire);
   }
   private learningLocked() {
     return /awaiting completion|outcome unknown/i.test(
@@ -792,11 +800,17 @@ export class Fp2LocalCard extends LitElement {
                       this.layer !== "zone"
                         ? html`<div class="tools">
                             <button
-                              @click=${() => {
-                                this.draft = this.mask();
-                                this.requestUpdate();
+                              @click=${async () => {
+                                const attribute = Number(this.layer);
+                                if (!this.state?.specialMaps[attribute]?.fresh)
+                                  await this.run(() => this.client!.readSpecialMap(attribute));
+                                if (this.state?.specialMaps[attribute]?.fresh) {
+                                  this.draft = this.mask();
+                                  this.requestUpdate();
+                                }
                               }}
-                              ?disabled=${this.draft !== null || s.busy || !s.specialMaps[Number(this.layer)]?.fresh}
+                              ?disabled=${this.draft !== null || s.busy}
+                              title=${s.specialMaps[Number(this.layer)]?.fresh ? "" : this.t("Reads the map from the radar first")}
                             >
                               ${this.t("Edit map")}</button
                             ><button
