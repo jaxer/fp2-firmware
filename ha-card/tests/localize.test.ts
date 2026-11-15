@@ -7,7 +7,7 @@ import {
   formatDate,
 } from "../src/localize.ts";
 import { Fp2Client } from "../src/client.ts";
-import { decodeMask, SPECIAL_MAPS, SCALAR_CONTROLS } from "../src/protocol.ts";
+import { decodeMask, SPECIAL_MAPS, SCALAR_CONTROLS, ZONE_TYPE_NAMES } from "../src/protocol.ts";
 import type { HomeAssistant } from "../src/types.ts";
 
 function hass(language?: string): HomeAssistant {
@@ -74,6 +74,17 @@ test("protocol labels and validation localize without altering protocol attribut
     assert.ok(!/[А-Яа-я]/.test(item.label));
     assert.notEqual(translate(item.label, "ru"), item.label);
   }
+  for (const control of SCALAR_CONTROLS)
+    for (const option of control.options) {
+      assert.ok(option.value >= control.min && option.value <= control.max);
+      assert.notEqual(translate(option.label, "ru"), option.label);
+    }
+  assert.deepEqual(
+    SCALAR_CONTROLS.find((c) => c.attribute === 0x170)!.options.map((o) => [o.value, o.label]),
+    [[1, "Wall"], [2, "Left corner"], [3, "Right corner"]],
+  );
+  for (const name of Object.values(ZONE_TYPE_NAMES))
+    assert.notEqual(translate(name, "ru"), name);
   assert.throws(() => decodeMask("bad"), /Expected 40-byte mask/);
   assert.throws(() => decodeMask("bad", "ru"), /Ожидается маска из 40 байт/);
 });

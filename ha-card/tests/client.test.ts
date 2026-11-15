@@ -354,3 +354,93 @@ test("generated zone labels are localized while custom names and only valid cand
     client.dispose();
   }
 });
+
+test("opening the editor reads only the installation angle and never saves the cache", async () => {
+  const calls: string[] = [];
+  const hass: HomeAssistant = {
+    states: {
+      "binary_sensor.fp2_radar_traffic": { state: "on", attributes: {}, last_updated: "now" },
+      "binary_sensor.fp2_room_presence": { state: "off", attributes: {}, last_updated: "now" },
+    },
+    connection: { subscribeEvents: async () => () => {} },
+    callWS: async (m: any) => {
+      calls.push(m.type === "call_service" ? `${m.service}:${m.service_data.attribute_id}` : m.type);
+      if (m.type === "call_service")
+        return {
+          response: {
+            configuration: JSON.stringify({ kind: "scalar", attribute: 0x170, raw: 2, wire: 2, source: "radar_ram", observed_ms: 1000 }),
+          },
+        };
+      return {};
+    },
+    callService: async () => {
+      throw new Error("unexpected service call");
+    },
+  };
+  const client = new Fp2Client({}, () => {});
+  try {
+    client.attach(hass);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    assert.equal(client.state.scalars[0x170]?.wire, 2);
+    assert.equal(client.state.scalars[0x170]?.fresh, true);
+    assert.ok(calls.includes("fp2_fp2_read_configuration:368"));
+    assert.ok(!calls.includes("lovelace/config/save"));
+    assert.equal(client.state.notice, null);
+  } finally {
+    client.dispose();
+  }
+  const silent = new Fp2Client({}, () => {});
+  const quiet: HomeAssistant = { ...hass, states: { "binary_sensor.fp2_radar_traffic": { state: "off", attributes: {}, last_updated: "now" } } };
+  calls.length = 0;
+  try {
+    silent.attach(quiet);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    assert.ok(!calls.some((c) => c.includes("read_configuration")), "no radar read while the radar link is down");
+  } finally {
+    silent.dispose();
+  }
+});
+
+test("a changed installation angle is saved to the cache so status cards follow it", async () => {
+  const mask = "00".repeat(40);
+  const snapshot = {
+    version: 1,
+    node: "fp2",
+    entity_prefix: "fp2",
+    savedAt: 1,
+    zones: Object.fromEntries(
+      Array.from({ length: 30 }, (_, i) => [i + 1, { kind: "zone", id: i + 1, mask, active_raw: 0, sensitivity: 1, type: 0, close_away_raw: 0, source: "radar_ram", observed_ms: 1 }]),
+    ),
+    specialMaps: Object.fromEntries([0x107, 0x109, 0x110].map((a) => [a, { kind: "map", attribute: a, mask, source: "radar_ram", observed_ms: 1 }])),
+    scalars: Object.fromEntries([[0x106, 1], [0x111, 3], [0x122, 2], [0x170, 1]].map(([a, v]) => [a, { kind: "scalar", attribute: a, raw: v, wire: v, source: "radar_ram", observed_ms: 1 }])),
+  };
+  const saved: any[] = [];
+  const hass: HomeAssistant = {
+    states: { "binary_sensor.fp2_radar_traffic": { state: "on", attributes: {}, last_updated: "now" } },
+    connection: { subscribeEvents: async () => () => {} },
+    callWS: async (m: any) => {
+      if (m.type === "lovelace/config") return { fp2_configuration_cache: { fp2: snapshot } };
+      if (m.type === "lovelace/config/save") {
+        saved.push(m.config);
+        return {};
+      }
+      if (m.type === "call_service")
+        return { response: { configuration: JSON.stringify({ kind: "scalar", attribute: 0x170, raw: 2, wire: 2, source: "radar_ram", observed_ms: 5000 }) } };
+      return {};
+    },
+    callService: async () => {
+      throw new Error("unexpected service call");
+    },
+  };
+  const client = new Fp2Client({}, () => {});
+  try {
+    client.attach(hass);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    assert.equal(client.state.scalars[0x170]?.wire, 2);
+    assert.equal(saved.length, 1, "cache saved once");
+    assert.equal(saved[0].fp2_configuration_cache.fp2.scalars[0x170].wire, 2);
+    assert.equal(saved[0].fp2_configuration_cache.fp2.scalars[0x106].wire, 1, "other cached values are kept");
+  } finally {
+    client.dispose();
+  }
+});

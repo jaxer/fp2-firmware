@@ -1,0 +1,35 @@
+name: Release cards
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: ha-card/package-lock.json
+      - name: Tag must match the card version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=$(node -p "require('./ha-card/package.json').version")
+          test "$TAG" = "v$version" || { echo "tag $TAG != package.json version $version"; exit 1; }
+      - name: Test and build
+        run: |
+          npm ci --prefix ha-card
+          npm --prefix ha-card test
+          npm --prefix ha-card run build
+      - name: Publish release with the card bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" ha-card/dist/fp2-local-card.js --title "Cards $TAG" --generate-notes

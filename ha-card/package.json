@@ -1,10 +1,10 @@
 {
   "name": "fp2-local-ha-card",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "esbuild src/card.ts --bundle --format=esm --target=es2022 --outfile=dist/fp2-local-card.js",
+    "build": "node build.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:ui": "node tests/ui.mjs"
   },

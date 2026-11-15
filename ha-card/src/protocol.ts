@@ -17,6 +17,7 @@ export const SPECIAL_MAPS = [
     description: "May exclude matching targets from the tracker.",
   },
 ];
+// Value names follow the community FP2 protocol notes (hansihe); undocumented values are not offered.
 export const SCALAR_CONTROLS = [
   {
     attribute: 0x106,
@@ -24,6 +25,11 @@ export const SCALAR_CONTROLS = [
     min: 0,
     max: 2,
     advanced: true,
+    options: [
+      { value: 0, label: "Far" },
+      { value: 1, label: "Medium" },
+      { value: 2, label: "Close" },
+    ],
   },
   {
     attribute: 0x111,
@@ -31,6 +37,11 @@ export const SCALAR_CONTROLS = [
     min: 0,
     max: 3,
     advanced: true,
+    options: [
+      { value: 1, label: "Low" },
+      { value: 2, label: "Medium" },
+      { value: 3, label: "High" },
+    ],
   },
   {
     attribute: 0x122,
@@ -38,6 +49,11 @@ export const SCALAR_CONTROLS = [
     min: 0,
     max: 2,
     advanced: true,
+    options: [
+      { value: 0, label: "Consistent" },
+      { value: 1, label: "Opposite" },
+      { value: 2, label: "Automatic" },
+    ],
   },
   {
     attribute: 0x170,
@@ -45,8 +61,28 @@ export const SCALAR_CONTROLS = [
     min: 0,
     max: 3,
     advanced: true,
+    options: [
+      { value: 1, label: "Wall" },
+      { value: 2, label: "Left corner" },
+      { value: 3, label: "Right corner" },
+    ],
   },
 ];
+// Installation angle 0170: 1 wall (sensor at top centre), 2 left corner, 3 right corner.
+export function sensorColumn(angle?: number): number {
+  return angle === 2 ? 0 : angle === 3 ? 16 : 8;
+}
+// Raw zone-type values with a name in the community FP2 notes; the others stay code-only.
+export const ZONE_TYPE_NAMES: Record<number, string> = {
+  2: "TV",
+  10: "Green plant",
+  11: "Leisure",
+  13: "Dressing",
+  14: "Closet",
+  15: "Desk",
+  23: "Shower",
+  36: "Stairs",
+};
 export const ZONE_TYPE_CODES = [
   "0",
   "1",
