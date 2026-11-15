@@ -102,6 +102,10 @@ python3 tools/install_plan.py .tools/stock.bin
 Find the `offset` value in the output. Replace `OFFSET` below with that value.
 This is where the app will be written. **Never use zero or run an erase command.**
 
+The tool accepts two stock bootloader builds and refuses anything else. The
+second one was checked by an offline diff and installed end to end on one unit.
+If yours is rejected, stop.
+
 ```sh
 uv run --with esptool==5.6.0 esptool --chip esp32 --port "$FP2_PORT" --baud 115200 write-flash OFFSET .tools/install/app.bin
 ```
@@ -144,3 +148,24 @@ uv run --python 3.13 --with esphome==2026.8.2 esphome upload firmware/fp2-normal
 ```
 
 This updates the ESP32. You don’t need to repeat the radar installation.
+
+## Several FP2 units
+
+Each unit needs its own device name, its own backup and its own app file. Repeat
+the steps above for every unit with these changes:
+
+1. Copy `firmware/fp2-unit-example.yaml` to `firmware/fp2-ROOM.yaml` and change
+   the two names.
+2. Build it with `python3 tools/build_firmware.py fp2-ROOM.yaml`. This writes
+   `artifacts/fp2-ROOM-esp32.bin`; the default build is unchanged.
+3. Keep each unit's backup separate, and plan from that unit's own backup:
+
+```sh
+python3 tools/install_plan.py .tools/ROOM/stock.bin --app artifacts/fp2-ROOM-esp32.bin --output .tools/ROOM/install
+```
+
+The radar tool refuses to overwrite an existing `--output` file, so give each
+unit's radar receipts their own names, such as `.tools/ROOM-radar-install.json`.
+
+Use `--device fp2-ROOM.local` for Wi-Fi updates, and set the card's `node`,
+`entity_prefix` and `service_prefix` to `fp2_ROOM`.
