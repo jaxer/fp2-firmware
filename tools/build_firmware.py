@@ -8,6 +8,7 @@ import shutil
 import struct
 import re
 import subprocess
+import sys
 from toolchain import xtensa_tool
 
 from esphome import __main__ as cli, const
@@ -17,6 +18,13 @@ from ota_policy import audit_ota_main, audit_ota_defines
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = "2026.8.2"
+_config_name = sys.argv[1] if len(sys.argv) > 1 else "fp2-normal.yaml"
+if Path(_config_name).name != _config_name or not (ROOT / "firmware" / _config_name).is_file():
+    raise SystemExit("Config must be a YAML file inside firmware/")
+CONFIG = ROOT / "firmware" / _config_name
+# The default unit keeps the historical artifact names.
+STEM = "fp2" if _config_name == "fp2-normal.yaml" else CONFIG.stem
+MANIFEST_NAME = "manifest.json" if STEM == "fp2" else STEM + "-manifest.json"
 compile_program = cli.compile_program
 
 
@@ -89,7 +97,7 @@ def audit(project):
             raise ValueError("Generated component source is stale: " + source.name)
     out = ROOT / "artifacts"
     out.mkdir(exist_ok=True)
-    shutil.copyfile(app, out / "fp2-esp32.bin")
+    shutil.copyfile(app, out / (STEM + "-esp32.bin"))
     sources = list((ROOT / "components/fp2").glob("*")) + list(
         (ROOT / "firmware").glob("*.yaml")
     )
@@ -111,7 +119,7 @@ def audit(project):
             if p.is_file() and p.name != "secrets.yaml"
         },
     }
-    (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    (out / MANIFEST_NAME).write_text(json.dumps(manifest, indent=2) + "\n")
 
 
 def guarded_compile(args, config):
@@ -132,5 +140,5 @@ if __name__ == "__main__":
         raise SystemExit("Requires ESPHome==" + VERSION)
     cli.compile_program = guarded_compile
     raise SystemExit(
-        cli.run_esphome(["esphome", "compile", str(ROOT / "firmware/fp2-normal.yaml")])
+        cli.run_esphome(["esphome", "compile", str(CONFIG)])
     )
