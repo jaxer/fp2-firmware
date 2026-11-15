@@ -12,6 +12,8 @@ from inspect_flash import inspect_flash, inspect_image
 
 ROOT = Path(__file__).resolve().parents[1]
 BOOTLOADER_SHA256 = "c7387384a39eec2ffad214c4fe7fff17e6641b9642accf8a9dbd98ec49375ca7"
+# Newer stock build (chip-revision range checks, same IDF sources). Reviewed by offline diff; installed and booted end to end on one unit.
+BOOTLOADER_SHA256_REVIEWED = "bbcb0b3080a3b5cfae0878b9dd710ea25c6d23f3db755e74bafb3a3ae4f9ff3a"
 
 
 def selector(data, partitions):
@@ -66,7 +68,8 @@ def main():
     stock = a.backup.read_bytes()
     if (
         len(stock) != 0x1000000
-        or hashlib.sha256(stock[0x1000:0x8000]).hexdigest() != BOOTLOADER_SHA256
+        or hashlib.sha256(stock[0x1000:0x8000]).hexdigest()
+        not in (BOOTLOADER_SHA256, BOOTLOADER_SHA256_REVIEWED)
     ):
         p.error("Unsupported stock bootloader/backup size; do not flash")
     inventory = inspect_flash(a.backup)
